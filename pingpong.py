@@ -43,6 +43,12 @@ class GameSprite(sprite.Sprite):
 class Player(GameSprite):
     def update1(self):
         keys_pressed = key.get_pressed()
+        if keys_pressed[K_w] and self.rect.y >= 20:
+            self.rect.y -= self.speed
+        if keys_pressed[K_s] and self.rect.y <= 580:
+            self.rect.y += self.speed
+    def update2(self):
+        keys_pressed = key.get_pressed()
         if keys_pressed[K_UP] and self.rect.y >= 20:
             self.rect.y -= self.speed
         if keys_pressed[K_DOWN] and self.rect.y <= 580:
@@ -50,7 +56,8 @@ class Player(GameSprite):
 
 #sprites------------------------------------------------------------------------
 
-block1 = Player('block.png', 5, 0, 50)
+block1 = Player('block.png', 15, 0, 50)
+block2 = Player('block.png', 15, 1160, 50)
 
 #game---------------------------------------------------------------------------
 
@@ -67,5 +74,8 @@ while game:
 
         block1.update1()
         block1.reset()
+
+        block2.update2()
+        block2.reset()
     
     display.update() 
