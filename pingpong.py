@@ -4,7 +4,19 @@ import time as sec
 mixer.init()
 font.init()
 
-font = font.SysFont('Courier New', 50)
+font = font.SysFont('Courier New', 75)
+
+#score--------------------------------------------------------------------------
+
+score1 = 0
+
+score2 = 0
+
+#speed--------------------------------------------------------------------------
+
+speed_x = 10
+
+speed_y = 10
 
 #window-------------------------------------------------------------------------
 
@@ -30,9 +42,9 @@ mixer.music.set_volume(0.03)
 #class--------------------------------------------------------------------------
 
 class GameSprite(sprite.Sprite):
-    def __init__(self, player_img, player_speed, player_x, player_y):
+    def __init__(self, player_img, player_speed, player_x, player_y, size_x, size_y):
         super().__init__()
-        self.image = transform.scale(image.load(player_img), (125, 125))
+        self.image = transform.scale(image.load(player_img), (size_x, size_y))
         self.speed = player_speed
         self.rect = self.image.get_rect()
         self.rect.x = player_x
@@ -56,8 +68,12 @@ class Player(GameSprite):
 
 #sprites------------------------------------------------------------------------
 
-block1 = Player('block.png', 15, 0, 50)
-block2 = Player('block.png', 15, 1160, 50)
+block1 = Player('blockupdate.png', 15, 0, 50, 30, 125)
+block2 = Player('blockupdate.png', 15, 1250, 50, 30, 125)
+
+ball = GameSprite('ball.png', 10, 690, 360, 50, 50)
+
+scoretable = GameSprite('score.png', 0, 575, 0, 200, 200)
 
 #game---------------------------------------------------------------------------
 
@@ -68,6 +84,7 @@ while game:
     for e in event.get():
         if e.type == QUIT:
             game = False
+
     if finish != True:
 
         window.blit(background, (0, 0))
@@ -77,5 +94,59 @@ while game:
 
         block2.update2()
         block2.reset()
+
+        scoretable.reset()
+
+        ball.reset()
+
+        ball.rect.x += speed_x 
+        ball.rect.y += speed_y
+
+        score = font.render(str(score1) + ":" + str(score2), True,(0,0,0))
+        window.blit(score, (605, 110))
+
+        if ball.rect.x > w_width:
+            score1 += 1
+
+        if ball.rect.x < 0:
+            score2 += 1
+
+        if score1 == 5:
+            win1 = font.render('PLAYER 1 WON', True,(255,255,255))
+            window.blit(win1, (400, 340))
+            end_time = int(sec.time())
+            finish = True
+        
+        if score2 == 5:
+            win2 = font.render('PLAYER 2 WON', True,(255,255,255))
+            window.blit(win2, (400, 340))
+            end_time = int(sec.time())
+            finish = True
+
+        if ball.rect.y > w_height - 50 or ball.rect.y < 0:
+            speed_y *= -1
     
+        if sprite.collide_rect(block2, ball):
+            speed_x *= -1
+
+        if sprite.collide_rect(block1, ball):
+            speed_x *= -1
+
+        if ball.rect.x > w_width or ball.rect.x < 0:
+            ball = GameSprite('ball.png', 10, 690, 360, 50, 50)
+    
+    if finish == True:
+        start_time = int(sec.time())
+        if start_time - end_time >= 3:
+            finish = False
+            score1 = 0
+            score2 = 0
+
+            block1 = Player('blockupdate.png', 15, 0, 50, 30, 125)
+            block2 = Player('blockupdate.png', 15, 1250, 50, 30, 125)
+
+            ball = GameSprite('ball.png', 10, 690, 360, 50, 50)
+
+            scoretable = GameSprite('score.png', 0, 575, 0, 200, 200)
+
     display.update() 
